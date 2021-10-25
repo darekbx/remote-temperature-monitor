@@ -1,23 +1,11 @@
-/**
- * TODO:
- *  - button debounce: https://www.arduino.cc/en/Tutorial/BuiltInExamples/Debounce
- *  - add headers for ble and battery
- *  - change names for ble an battert
- *  - add to battery function to read voltage, which will be used in BLE transfer
- *  - move temp/hum sensor to external file with header
- *  - decrease refresh rate?
- *  - change battery display ratio
- *  - remove from ble time set (android phone will store datetimes)
- *  - prettier format of temp/hum display
- */
 #include "m5_temperature_monitor.h"
  
 RTC_TimeTypeDef TimeStruct;
 
 bool deviceConnected = false;
 bool isScreenOn = true;
-
 byte topMargin = BATTERY_LEVEL_HEIGHT + BATTERY_LEVEL_PADDING;
+int lastScreenRefreshTime = 0;
 
 void setup() {
   #if DEBUG
@@ -28,16 +16,17 @@ void setup() {
   #endif
   
   M5.begin();
-  Wire.begin(0, 26);
   
   M5.Axp.ScreenBreath(SCREEN_BREATH);
   M5.Lcd.setRotation(3);
   
   initBle();
   resetTime();
+  initializeSensor();
 }
 
 void loop() {
+  M5.update();
   M5.Rtc.GetTime(&TimeStruct);
 
   if (deviceConnected && TimeStruct.Minutes >= NOTIFY_INTERVAL) {
@@ -48,7 +37,8 @@ void loop() {
   handleTurnOffButton();
   handleScreenOnOffButton();
   
-  if (isScreenOn) {
+  if (isScreenOn && millis() - lastScreenRefreshTime >= 2000) {
+    lastScreenRefreshTime = millis();
     updateDisplay();
   }
 
@@ -61,7 +51,7 @@ void writeData() {
 }
 
 void handleScreenOnOffButton() {
-  if (digitalRead(M5_BUTTON_HOME) == LOW) {
+  if (M5.BtnA.wasPressed()) {
     isScreenOn = !isScreenOn;
     if (isScreenOn) {
       M5.Axp.ScreenBreath(0);
