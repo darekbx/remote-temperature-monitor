@@ -28,10 +28,15 @@ void setup() {
 void loop() {
   M5.update();
   M5.Rtc.GetTime(&TimeStruct);
+  float vbat = batteryVoltage();
 
   if (deviceConnected && TimeStruct.Minutes >= NOTIFY_INTERVAL) {
-    writeData();
+    writeData(vbat);
     resetTime();
+  }
+
+  if (vbat < 3.0) {
+    M5.Axp.PowerOff();
   }
   
   handleTurnOffButton();
@@ -45,8 +50,7 @@ void loop() {
   delay(MAIN_LOOP_DELAY);
 }
 
-void writeData() {
-  float vbat = batteryVoltage();
+void writeData(float vbat) {
   writeBle(String(vbat) + ";" + String(tmp) + ";" + String(hum));
 }
 

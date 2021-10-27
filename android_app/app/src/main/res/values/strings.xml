@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Temperature Monitor</string>
+    <string name="permissions_are_required">Permissions are required!</string>
+    <string name="bluetooth_is_off">Please turn bluetooth on</string>
+    <string name="button_ok">OK</string>
+</resources>
