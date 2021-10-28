@@ -81,14 +81,18 @@ class MainActivity : AppCompatActivity() {
             val calendar = Calendar.getInstance().apply { this.timeInMillis = newest.timestamp }
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
-            binding.timeView.text = "$hour:$minute"
+            binding.timeView.text = "${hour.padNumber()}:${minute.padNumber()}"
 
-            val diff = newest.timestamp - oldest.timestamp
-            val seconds = diff / 1000
-            val minutes = seconds / 60
-            val hours = minutes / 60
-            binding.elapsedTimeView.text = "${hours.toString().padStart(2, '0')}h " +
-                    "${minutes.toString().padStart(2, '0')}m"
+            var diff = newest.timestamp - oldest.timestamp
+            val secondsInMilli: Long = 1000
+            val minutesInMilli = secondsInMilli * 60
+            val hoursInMilli = minutesInMilli * 60
+
+            val hours: Long = diff / hoursInMilli
+            diff = diff % hoursInMilli
+            val minutes: Long = diff / minutesInMilli
+
+            binding.elapsedTimeView.text = "${hours.padNumber()}h ${minutes.padNumber()}m"
         }
 
         with (binding.temperatureChart) {
@@ -102,6 +106,9 @@ class MainActivity : AppCompatActivity() {
             guideDigits = 2
         }
     }
+
+    private fun Int.padNumber() = toString().padStart(2, '0')
+    private fun Long.padNumber() = toString().padStart(2, '0')
 
     private fun startStopService() {
         if (!isBluetoothEnabled()) {
