@@ -28,17 +28,17 @@ void setup() {
 void loop() {
   M5.update();
   M5.Rtc.GetTime(&TimeStruct);
-  float vbat = batteryVoltage();
 
   if (deviceConnected && TimeStruct.Minutes >= NOTIFY_INTERVAL) {
+    refreshSensors();
+    float vbat = batteryVoltage();
     writeData(vbat);
     resetTime();
+    if (vbat < 3.0) {
+      M5.Axp.PowerOff();
+    }
   }
 
-  if (vbat < 3.0) {
-    M5.Axp.PowerOff();
-  }
-  
   handleTurnOffButton();
   handleScreenOnOffButton();
   

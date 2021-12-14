@@ -10,6 +10,11 @@ void initializeSensor() {
   sensors.begin(); 
 }
 
+void refreshSensors() {
+  sensors.requestTemperatures();
+  tmp = sensors.getTempCByIndex(0);
+}
+
 void displaySensorReading() {
   sensors.requestTemperatures();
   tmp = sensors.getTempCByIndex(0);

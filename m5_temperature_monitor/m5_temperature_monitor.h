@@ -7,7 +7,7 @@
 
 #define BLE_NAME "M5StickC"
 #define SCREEN_BREATH 8
-#define NOTIFY_INTERVAL 1 // Minutes
+#define NOTIFY_INTERVAL 5 // Minutes
 #define MAIN_LOOP_DELAY 10
 #define ENABLE_SENSOR_HEATER false
 
@@ -20,6 +20,7 @@ float hum = 0.0;
 float batteryVoltage();
 void writeData();
 void initializeSensor();
+void refreshSensors();
 void displaySensorReading();
 void setConnected();
 void setDisconnected();
