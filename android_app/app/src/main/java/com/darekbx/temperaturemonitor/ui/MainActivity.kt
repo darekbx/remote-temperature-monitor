@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.darekbx.temperaturemonitor.R
-import com.darekbx.temperaturemonitor.ble.BluetoothService
+import com.darekbx.temperaturemonitor.nordicble.BluetoothService
 import com.darekbx.temperaturemonitor.databinding.ActivityMainBinding
 import com.darekbx.temperaturemonitor.repository.Entity
 import com.darekbx.temperaturemonitor.system.PermissionRequester

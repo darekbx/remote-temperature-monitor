@@ -65,5 +65,11 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-viewmodel:$koin_version"
     implementation "io.insert-koin:koin-androidx-scope:$koin_version"
 
+    // Nordic BLE
+    implementation 'no.nordicsemi.android:ble:2.3.1'
+    implementation 'no.nordicsemi.android:ble-ktx:2.3.1'
+    implementation 'no.nordicsemi.android:ble-livedata:2.3.1'
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
+
     testImplementation 'junit:junit:4.+'
 }

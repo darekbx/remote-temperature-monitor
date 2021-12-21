@@ -1,21 +1,13 @@
 package com.darekbx.temperaturemonitor.ble
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
-import android.app.PendingIntent.getActivity
 import android.app.Service
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import com.darekbx.temperaturemonitor.R
 import com.darekbx.temperaturemonitor.repository.Entity
 import com.darekbx.temperaturemonitor.repository.EntityDao
-import com.darekbx.temperaturemonitor.ui.MainActivity
 import com.darekbx.temperaturemonitor.ui.MainActivity.Companion.DEVICE_STATUS
 import com.darekbx.temperaturemonitor.ui.MainActivity.Companion.DEVICE_STATUS_ACTION
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +19,7 @@ import java.util.*
 class BluetoothService : Service() {
 
     private val entityDao: EntityDao by inject()
+    private val notificationUtil: NotificationUtil by inject()
 
     companion object {
         var IS_SERVICE_ACTIVE = false
@@ -37,7 +30,7 @@ class BluetoothService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        val notification = createNotification(
+        val notification = notificationUtil.createNotification(
             "Current readings",
             "-° / -v"
         )
@@ -76,7 +69,7 @@ class BluetoothService : Service() {
                     chunks[0].toFloat()
                 )
                 entityDao.add(entity)
-                updateNotification(entity)
+                notificationUtil.updateNotification(entity)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,48 +94,6 @@ class BluetoothService : Service() {
         )
     }
 
-    private fun updateNotification(entity: Entity) {
-        val notification = createNotification(
-            "Current readings",
-            "${entity.temperature}° / ${entity.voltage}v"
-        )
-        notificationManager.notify(NOTIFICATION_ID, notification)
-    }
-
-    private fun createNotification(title: String, text: String): Notification {
-
-        val tracksIntent = Intent(applicationContext, MainActivity::class.java)
-        val tracksPendingIntent = getActivity(
-            applicationContext, 0,
-            tracksIntent, FLAG_UPDATE_CURRENT
-        )
-
-        val builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_thermometer)
-            .setContentTitle(title)
-            .setContentText(text)
-            .setContentIntent(tracksPendingIntent)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-
-        val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        var channel = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID)
-        if (channel == null) {
-            channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                title,
-                NotificationManager.IMPORTANCE_LOW
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        return builder.build()
-    }
-
-    private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
     private val bluetoothManager by lazy { getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager }
 
     private val bluetoothConnection by lazy {
