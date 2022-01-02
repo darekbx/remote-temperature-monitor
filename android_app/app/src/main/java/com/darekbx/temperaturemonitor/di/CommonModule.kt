@@ -1,6 +1,7 @@
 package com.darekbx.temperaturemonitor.di
 
 import androidx.room.Room
+import com.darekbx.temperaturemonitor.ble.NotificationUtil
 import com.darekbx.temperaturemonitor.repository.AppDatabase
 import com.darekbx.temperaturemonitor.repository.AppDatabase.Companion.DB_NAME
 import com.darekbx.temperaturemonitor.viewmodel.SensorViewModel
@@ -14,6 +15,7 @@ object CommonModule {
             Room.databaseBuilder(androidApplication(), AppDatabase::class.java, DB_NAME).build()
         }
         single { get<AppDatabase>().entityDao() }
+        single { NotificationUtil(androidApplication()) }
         viewModel { SensorViewModel(get()) }
     }
 }
